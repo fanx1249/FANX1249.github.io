@@ -1,11 +1,361 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <title>Welcome</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>新承❤琳琳</title>
+  <style>
+    :root{
+      --bg1:#0b0f1e;
+      --bg2:#1a1033;
+      --pink:#ff5fa2;
+      --pink2:#ff8cc8;
+      --gold:#ffd6a5;
+      --text:#fff7fb;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+                   Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      color:var(--text);
+      overflow:hidden;
+      background:
+        radial-gradient(1200px 700px at 20% 15%, rgba(255,95,162,.18), transparent 60%),
+        radial-gradient(900px 600px at 85% 25%, rgba(255,214,165,.14), transparent 55%),
+        radial-gradient(1200px 900px at 50% 120%, rgba(122,92,255,.18), transparent 55%),
+        linear-gradient(160deg, var(--bg1), var(--bg2));
+    }
+
+    /* 背景光晕 */
+    .glow{
+      position:absolute; inset:-20%;
+      filter: blur(55px);
+      opacity:.85;
+      background:
+        radial-gradient(circle at 30% 35%, rgba(255,95,162,.35), transparent 50%),
+        radial-gradient(circle at 70% 30%, rgba(255,214,165,.22), transparent 52%),
+        radial-gradient(circle at 55% 75%, rgba(167,139,250,.30), transparent 55%);
+      animation: drift 10s ease-in-out infinite alternate;
+      pointer-events:none;
+    }
+    @keyframes drift{
+      from{ transform: translate3d(-2%, -1%, 0) scale(1.02); }
+      to  { transform: translate3d(2%,  1%, 0) scale(1.06); }
+    }
+
+    /* 星光粒子层（CSS 伪随机） */
+    .stars, .stars:before, .stars:after{
+      content:"";
+      position:absolute; inset:0;
+      background-repeat:repeat;
+      background-size: 260px 260px;
+      opacity:.35;
+      pointer-events:none;
+      animation: twinkle 8s linear infinite;
+      background-image:
+        radial-gradient(2px 2px at 40px 60px, rgba(255,255,255,.9), transparent 60%),
+        radial-gradient(1.5px 1.5px at 120px 160px, rgba(255,255,255,.7), transparent 60%),
+        radial-gradient(1.8px 1.8px at 210px 90px, rgba(255,255,255,.6), transparent 60%),
+        radial-gradient(1.2px 1.2px at 70px 210px, rgba(255,255,255,.55), transparent 60%),
+        radial-gradient(2.2px 2.2px at 230px 220px, rgba(255,255,255,.8), transparent 60%);
+    }
+    .stars:before{ opacity:.25; animation-duration: 12s; transform: scale(1.2); }
+    .stars:after { opacity:.18; animation-duration: 18s; transform: scale(1.5); }
+    @keyframes twinkle{
+      0%{ transform: translate3d(0,0,0); }
+      100%{ transform: translate3d(-260px, -260px, 0); }
+    }
+
+    /* 主容器 */
+    .wrap{
+      position:relative;
+      height:100%;
+      display:grid;
+      place-items:center;
+      padding: 28px;
+    }
+
+    .card{
+      width:min(920px, 96vw);
+      border-radius: 28px;
+      padding: clamp(26px, 4vw, 44px);
+      background: linear-gradient( to bottom right,
+        rgba(255,255,255,.10),
+        rgba(255,255,255,.06)
+      );
+      border: 1px solid rgba(255,255,255,.16);
+      box-shadow:
+        0 30px 90px rgba(0,0,0,.45),
+        0 0 0 1px rgba(255,255,255,.04) inset;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      position: relative;
+      overflow:hidden;
+    }
+
+    /* 边缘浪漫高光 */
+    .card:before{
+      content:"";
+      position:absolute; inset:-2px;
+      border-radius: 30px;
+      padding: 2px;
+      background: linear-gradient(135deg,
+        rgba(255,95,162,.55),
+        rgba(255,214,165,.35),
+        rgba(167,139,250,.45)
+      );
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+              mask-composite: exclude;
+      opacity:.75;
+      pointer-events:none;
+    }
+
+    /* 心形与文字 */
+    .hero{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      gap: 18px;
+      text-align:center;
+      position:relative;
+      z-index:1;
+      padding: 10px 0;
+    }
+
+    .title{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-wrap:wrap;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: .02em;
+      line-height:1.05;
+      font-size: clamp(36px, 7vw, 72px);
+      margin: 0;
+      text-shadow: 0 14px 40px rgba(0,0,0,.40);
+    }
+
+    .name{
+      background: linear-gradient(180deg, rgba(255,255,255,1), rgba(255,247,251,.86));
+      -webkit-background-clip:text;
+      background-clip:text;
+      color: transparent;
+    }
+
+    .heart{
+      width: 46px;
+      height: 46px;
+      display:inline-grid;
+      place-items:center;
+      position:relative;
+      transform: translateY(2px);
+      filter: drop-shadow(0 10px 18px rgba(255,95,162,.35));
+      animation: heartbeat 1.25s ease-in-out infinite;
+    }
+    .heart svg{ width:100%; height:100%; }
+    .heart .pulse{
+      position:absolute;
+      inset:-14px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(255,95,162,.28), transparent 55%);
+      animation: pulse 1.25s ease-in-out infinite;
+      pointer-events:none;
+    }
+    @keyframes heartbeat{
+      0%, 100%{ transform: translateY(2px) scale(1); }
+      20%{ transform: translateY(2px) scale(1.08); }
+      40%{ transform: translateY(2px) scale(0.98); }
+      60%{ transform: translateY(2px) scale(1.12); }
+      80%{ transform: translateY(2px) scale(1.02); }
+    }
+    @keyframes pulse{
+      0%{ transform: scale(.85); opacity:.55; }
+      60%{ transform: scale(1.25); opacity:.18; }
+      100%{ transform: scale(1.35); opacity:0; }
+    }
+
+    .subtitle{
+      margin:0;
+      font-size: clamp(14px, 2.2vw, 18px);
+      color: rgba(255,247,251,.82);
+      line-height:1.7;
+      max-width: 56ch;
+    }
+
+    /* 漂浮的爱心点点 */
+    .floaters{
+      position:absolute; inset:0;
+      pointer-events:none;
+      overflow:hidden;
+      z-index:0;
+    }
+    .floater{
+      position:absolute;
+      bottom: -40px;
+      left: var(--x);
+      width: var(--s);
+      height: var(--s);
+      opacity: var(--o);
+      filter: drop-shadow(0 8px 18px rgba(255,95,162,.25));
+      animation: rise var(--d) linear infinite;
+      transform: translate3d(0,0,0);
+    }
+    @keyframes rise{
+      0%{ transform: translate3d(0, 0, 0) rotate(0deg); }
+      100%{ transform: translate3d(0, -115vh, 0) rotate(180deg); }
+    }
+
+    /* 小按钮（可选互动） */
+    .actions{
+      display:flex;
+      gap: 12px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+      justify-content:center;
+    }
+    button{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.08);
+      color: rgba(255,247,251,.92);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight: 600;
+      cursor:pointer;
+      transition: transform .15s ease, background .15s ease, border-color .15s ease;
+      backdrop-filter: blur(10px);
+    }
+    button:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,.12);
+      border-color: rgba(255,255,255,.26);
+    }
+    button:active{ transform: translateY(0); }
+
+    /* 轻提示 */
+    .hint{
+      margin:0;
+      margin-top: 10px;
+      font-size: 12px;
+      color: rgba(255,247,251,.55);
+      letter-spacing:.02em;
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .glow, .stars, .heart, .heart .pulse, .floater{ animation:none !important; }
+    }
+  </style>
 </head>
+
 <body>
-  <h1>Hello, World</h1>
-  <p>这是我的第一个域名页面。</p>
+  <div class="glow"></div>
+  <div class="stars"></div>
+
+  <div class="wrap">
+    <div class="card">
+      <div class="floaters" aria-hidden="true" id="floaters"></div>
+
+      <div class="hero">
+        <h1 class="title" aria-label="新承 爱心 琳琳">
+          <span class="name">新承</span>
+
+          <span class="heart" title="❤" aria-hidden="true">
+            <span class="pulse"></span>
+            <!-- Heart SVG -->
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M12 21s-7.2-4.6-9.7-9C.2 8.2 1.5 4.9 4.7 3.7 6.9 2.9 9.2 3.6 10.8 5c.5.4.9.9 1.2 1.3.3-.4.7-.9 1.2-1.3 1.6-1.4 3.9-2.1 6.1-1.3 3.2 1.2 4.5 4.5 2.4 8.3C19.2 16.4 12 21 12 21Z"
+                    fill="url(#g)"/>
+              <defs>
+                <linearGradient id="g" x1="4" y1="4" x2="20" y2="21" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#ff5fa2"/>
+                  <stop offset="0.55" stop-color="#ff8cc8"/>
+                  <stop offset="1" stop-color="#ffd6a5"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </span>
+
+          <span class="name">琳琳</span>
+        </h1>
+
+        <p class="subtitle">
+          这是一页为你们定制的浪漫小站。愿每一次打开，都能想起彼此的温柔与坚定。
+        </p>
+
+        <div class="actions">
+          <button id="btnSpark">撒一点星光</button>
+          <button id="btnLove">再多一点爱心</button>
+        </div>
+
+        <p class="hint">提示：如果你不想要按钮互动，删掉 “actions” 这段即可。</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 生成漂浮爱心
+    const floaters = document.getElementById('floaters');
+
+    function makeHeartSVG(size){
+      const el = document.createElement('div');
+      el.className = 'floater';
+      el.style.setProperty('--s', size + 'px');
+      el.innerHTML = `
+        <svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" aria-hidden="true">
+          <path d="M12 21s-7.2-4.6-9.7-9C.2 8.2 1.5 4.9 4.7 3.7 6.9 2.9 9.2 3.6 10.8 5c.5.4.9.9 1.2 1.3.3-.4.7-.9 1.2-1.3 1.6-1.4 3.9-2.1 6.1-1.3 3.2 1.2 4.5 4.5 2.4 8.3C19.2 16.4 12 21 12 21Z"
+                fill="rgba(255,95,162,0.75)"/>
+        </svg>
+      `;
+      return el;
+    }
+
+    function spawnFloaters(n = 14){
+      for(let i=0;i<n;i++){
+        const x = Math.random() * 100;
+        const s = 10 + Math.random() * 22;
+        const o = 0.18 + Math.random() * 0.35;
+        const d = 7 + Math.random() * 10;
+
+        const h = makeHeartSVG(s);
+        h.style.setProperty('--x', x + 'vw');
+        h.style.setProperty('--o', o.toFixed(2));
+        h.style.setProperty('--d', d.toFixed(2) + 's');
+        h.style.animationDelay = (-Math.random() * d).toFixed(2) + 's';
+
+        // 动画结束清理（保险）
+        h.addEventListener('animationiteration', () => {
+          // 轻微抖动一下位置，增加随机感
+          h.style.setProperty('--x', (Math.random() * 100) + 'vw');
+        });
+
+        floaters.appendChild(h);
+      }
+    }
+
+    // 初始生成
+    spawnFloaters(18);
+
+    // 互动：额外爱心
+    document.getElementById('btnLove').addEventListener('click', () => {
+      spawnFloaters(10);
+    });
+
+    // 互动：星光闪烁（短暂提升星光层透明度）
+    document.getElementById('btnSpark').addEventListener('click', () => {
+      const stars = document.querySelector('.stars');
+      stars.animate(
+        [{ opacity: 0.35 }, { opacity: 0.65 }, { opacity: 0.35 }],
+        { duration: 900, easing: 'ease-in-out' }
+      );
+    });
+  </script>
 </body>
 </html>
+

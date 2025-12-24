@@ -78,7 +78,6 @@
       height:100%;
       pointer-events:none;
       z-index: 2;
-      /* 让星光更“通透” */
       mix-blend-mode: screen;
       filter: saturate(1.15) contrast(1.08);
     }
@@ -374,9 +373,9 @@
       canvas.style.width = W + 'px';
       canvas.style.height = H + 'px';
       ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      initStars(Math.floor((W * H) / 3800)); // 视口变化时重建星空密度
     }
     window.addEventListener('resize', resize);
-    resize();
 
     // 星星、闪光粒子、流星
     const stars = [];
@@ -395,7 +394,6 @@
           x: Math.random() * W,
           y: Math.random() * H,
           baseA: rand(0.15, 0.65),
-          a: 1,
           size,
           tw: rand(0.6, 1.8),     // twinkle speed
           ph: rand(0, Math.PI*2), // phase
@@ -403,7 +401,6 @@
         });
       }
     }
-    initStars(Math.floor((W * H) / 3800)); // 自适应密度
 
     // 轻微“银河带”雾化：用多层透明径向渐变叠加（不重，不喧宾夺主）
     function drawMilkyWay(){
@@ -429,27 +426,26 @@
           x, y,
           vx: Math.cos(ang) * v,
           vy: Math.sin(ang) * v,
-          life: rand(18, 42),
-          max: 0,
+          life: rand(35, 80),     // ✅ 更慢消失（原 18~42）
           size: rand(0.7, 1.8),
           a: rand(0.25, 0.85)
         });
       }
     }
 
-    // 流星
+    // ✅ 流星慢点滑落：速度更慢 + 寿命更长
     function spawnMeteor(){
       const startX = rand(-W*0.1, W*0.8);
       const startY = rand(-H*0.2, H*0.4);
-      const len = rand(180, 360);
-      const spd = rand(10, 18);
-      const ang = rand(Math.PI*0.06, Math.PI*0.18); // 向右下
+      const len = rand(220, 460);
+      const spd = rand(5, 9);              // ✅ 原 10~18
+      const ang = rand(Math.PI*0.06, Math.PI*0.18);
       meteors.push({
         x: startX, y: startY,
         vx: Math.cos(ang) * spd,
         vy: Math.sin(ang) * spd,
         len,
-        life: rand(22, 36),
+        life: rand(55, 85),                // ✅ 原 22~36
         a: rand(0.35, 0.85)
       });
     }
@@ -458,20 +454,18 @@
     let glowBoost = 0;
 
     function drawStars(t){
-      // 背景清空（透明画布，混合在 body 背景上）
       ctx.clearRect(0,0,W,H);
-
       drawMilkyWay();
 
       // 星星
       for(const s of stars){
         const twinkle = 0.55 + 0.45 * Math.sin(t * 0.001 * s.tw + s.ph);
         const a = Math.min(1, s.baseA * twinkle + glowBoost * 0.18);
-        const warm = s.hue; // 0~1
-        // 不用花哨配色：只做轻微冷暖变化
+        const warm = s.hue;
         const r = 255;
         const g = Math.floor(245 - warm * 15);
         const b = Math.floor(255 - warm * 35);
+
         ctx.fillStyle = `rgba(${r},${g},${b},${a})`;
         ctx.beginPath();
         ctx.arc(s.x, s.y, s.size, 0, Math.PI*2);
@@ -501,8 +495,9 @@
         p.vy *= 0.985;
         p.life -= 1;
 
-        const k = Math.max(0, p.life) / 42;
+        const k = Math.max(0, p.life) / 80;  // ✅ 原 42，配合更长寿命更慢变暗
         const a = p.a * k;
+
         ctx.fillStyle = `rgba(255,255,255,${a})`;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
@@ -518,7 +513,7 @@
         m.y += m.vy;
         m.life -= 1;
 
-        const fade = Math.max(0, m.life) / 36;
+        const fade = Math.max(0, m.life) / 90; // ✅ 原 36，更慢淡出
         const ax = m.x - m.vx * (m.len / 14);
         const ay = m.y - m.vy * (m.len / 14);
 
@@ -537,8 +532,8 @@
         if(m.life <= 0 || m.x > W+300 || m.y > H+300) meteors.splice(i,1);
       }
 
-      // 全局“星光增强”缓慢回落
-      glowBoost *= 0.92;
+      // ✅ 星光增强“回落更慢”
+      glowBoost *= 0.965; // 原 0.92
       if(glowBoost < 0.001) glowBoost = 0;
     }
 
@@ -546,6 +541,9 @@
       drawStars(t);
       requestAnimationFrame(loop);
     }
+
+    // 初始化
+    resize();
     requestAnimationFrame(loop);
 
     // 互动：撒一点星光（更漂亮的星空效果）
@@ -558,7 +556,7 @@
       // 生成 2~4 个流星
       const k = Math.floor(rand(2, 5));
       for(let i=0;i<k;i++){
-        setTimeout(spawnMeteor, i * 140);
+        setTimeout(spawnMeteor, i * 160); // 稍微拉开间隔，观感更“慢”
       }
 
       // 同时短暂提升原 stars 层的透明度（锦上添花）
